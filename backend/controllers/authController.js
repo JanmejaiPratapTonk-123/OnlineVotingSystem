@@ -7,6 +7,12 @@ const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: { user: process.env.NODEMAILER_EMAIL, pass: process.env.NODEMAILER_PASS }
 });
+if (!process.env.JWT_SECRET) {
+  console.warn("⚠️  JWT_SECRET is not set in environment variables!");
+}
+if (!process.env.MONGO_URI) {
+  console.warn("⚠️  MONGO_URI is missing in environment variables!");
+}
 // Register
 exports.register = async (req, res) => {
   try {
@@ -64,9 +70,10 @@ exports.login = async (req, res) => {
     // ✅ Success response
     res.json({ msg: "OTP sent successfully.", otp });
   } catch (err) {
-    console.error("Login Error:", err.message);
-    res.status(500).json({ msg: "Internal Server Error" });
-  }
+  console.error("Login Error:", err);
+  res.status(500).json({ msg: err.message || "Internal Server Error" });
+}
+
 };
 // Verify OTP & Issue JWT
 exports.verifyOTP = async (req, res) => {
