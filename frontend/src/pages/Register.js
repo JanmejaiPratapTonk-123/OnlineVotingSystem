@@ -33,16 +33,22 @@ const Register = () => {
   setError('');
 
   try {
-    const response = await registerUser(formData);
-    alert(`✅ Registered successfully! OTP sent to ${formData.email}`);
-    setStep(2);  // Move to OTP verification
-  } catch (err) {
-    setError(err.msg || err.message || 'Registration failed');
-  } finally {
-    setLoading(false);
-  }
-  };
+  const response = await registerUser(formData);
 
+  if (response.msg) {
+    // ✅ Show a visual message instead of alert
+    alert(`✅ ${response.msg}`);
+  }
+
+  // If OTP returned (in dev/demo mode), log it
+  if (response.otp) {
+    console.log("Mock OTP (for testing):", response.otp);
+  }
+
+  navigate('/verify', { state: { email: formData.email } });
+} catch (err) {
+  setError(err.response?.data?.msg || err.message || 'Registration failed');
+}}
 
   const handleVerifyOTP = async (e) => {
     e.preventDefault();

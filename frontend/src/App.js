@@ -9,8 +9,6 @@ import Voting from './pages/Voting';
 import Results from './pages/Results';
 import AdminDashboard from './pages/AdminDashboard';
 import Navbar from './components/Navbar';
-
-// ✅ Import your new Verify OTP page
 import VerifyOTP from './pages/VerifyOTP';
 
 function App() {
@@ -23,8 +21,6 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-
-            {/* ✅ Add this new route */}
             <Route path="/verify" element={<VerifyOTP />} />
 
             <Route

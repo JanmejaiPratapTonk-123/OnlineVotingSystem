@@ -77,14 +77,34 @@ exports.login = async (req, res) => {
 };
 // Verify OTP & Issue JWT
 exports.verifyOTP = async (req, res) => {
-  const { email, otp } = req.body;
-  const user = await User.findOne({ email, otp });
-  if (!user || !require('../utils/otpGenerator').validateOTP(otp, user.otp)) {
-    return res.status(400).json({ msg: 'Invalid OTP' });
+  try {
+    const { email, otp } = req.body;
+
+    // Find user by email
+    const user = await User.findOne({ email });
+    if (!user) return res.status(400).json({ msg: "User not found" });
+
+    // Check OTP match
+    if (user.otp !== otp) {
+      return res.status(400).json({ msg: "Invalid OTP" });
+    }
+
+    // Mark as verified
+    user.isVerified = true;
+    user.otp = undefined; // clear OTP after use
+    await user.save();
+
+    // Generate JWT token
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+
+    res.json({
+      msg: "Account verified successfully",
+      token,
+      user: { id: user._id, role: user.role }
+    });
+
+  } catch (err) {
+    console.error("OTP Verification Error:", err);
+    res.status(500).json({ msg: "Server Error during OTP verification" });
   }
-  user.isVerified = true;
-  user.otp = undefined;
-  await user.save();
-  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-  res.json({ token, user: { id: user._id, role: user.role } });
 };

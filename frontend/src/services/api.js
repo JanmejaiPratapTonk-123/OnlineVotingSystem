@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:5000/api'  // backend base URL
+  baseURL: process.env.REACT_APP_API_URL || 'https://onlinevotingsystem-sm9y.onrender.com/api',
 });
 
 // Attach token automatically to every request

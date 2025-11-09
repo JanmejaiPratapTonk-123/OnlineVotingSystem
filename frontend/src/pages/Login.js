@@ -18,24 +18,38 @@ const Login = () => {
   };
 
   const handleLogin = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
+  e.preventDefault();
+  setLoading(true);
+  setError('');
 
-    try {
-      const response = await loginUser (formData);  // API call: POST /api/auth/login
-      if (response.otp) {
-        setStep(2);  // Proceed to OTP
-        // In prod: Show input for OTP received via email/SMS
-      } else {
-        setError('Login failed');
-      }
-    } catch (err) {
-      setError(err.response?.data?.msg || 'Login error');
-    } finally {
-      setLoading(false);
+  try {
+    const response = await loginUser(formData); // POST /api/auth/login
+
+    if (response.otp) {
+      // if backend sends OTP immediately after login
+      setStep(2);
+    } else if (response.token) {
+      // verified and logged in successfully
+      login(response.user, response.token);
+      navigate('/voting');
+    } else {
+      setError('Login failed. Please try again.');
     }
-  };
+  } catch (err) {
+    const message = err.response?.data?.msg || 'Login error';
+
+    // 🚨 Detect “Please verify your account first” message
+    if (message.toLowerCase().includes('verify your account')) {
+      navigate('/verify', { state: { email: formData.email } });
+      return;
+    }
+
+    setError(message);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const handleVerifyOTP = async (e) => {
     e.preventDefault();
