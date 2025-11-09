@@ -84,23 +84,23 @@ exports.verifyOTP = async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ msg: "User not found" });
 
-    // Check OTP match
-    if (user.otp !== otp) {
-      return res.status(400).json({ msg: "Invalid OTP" });
+    // ✅ Compare OTP safely (convert both to string)
+    if (String(user.otp).trim() !== String(otp).trim()) {
+      return res.status(400).json({ msg: "Invalid OTP or verification failed" });
     }
 
-    // Mark as verified
+    // Mark verified
     user.isVerified = true;
-    user.otp = undefined; // clear OTP after use
+    user.otp = undefined; // clear OTP after success
     await user.save();
 
-    // Generate JWT token
+    // Generate token
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
 
     res.json({
       msg: "Account verified successfully",
       token,
-      user: { id: user._id, role: user.role }
+      user: { id: user._id, role: user.role },
     });
 
   } catch (err) {
