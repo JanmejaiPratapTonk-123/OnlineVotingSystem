@@ -1,25 +1,32 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
-import ProtectedRoute from './components/ProtectedRoute';  // Define this for auth checks
+import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Voting from './pages/Voting';
 import Results from './pages/Results';
 import AdminDashboard from './pages/AdminDashboard';
-import Navbar from './components/Navbar';  // Optional global nav
+import Navbar from './components/Navbar';
+
+// ✅ Import your new Verify OTP page
+import VerifyOTP from './pages/VerifyOTP';
 
 function App() {
   return (
     <AuthProvider>
       <Router>
         <div className="App">
-          <Navbar />  {/* Optional: Add if you have a global navbar */}
+          <Navbar />
           <Routes>
-            <Route path="/" element={<Home />} />  {/* Home as root */}
+            <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+
+            {/* ✅ Add this new route */}
+            <Route path="/verify" element={<VerifyOTP />} />
+
             <Route
               path="/voting"
               element={
@@ -44,7 +51,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            {/* Add more routes as needed */}
           </Routes>
         </div>
       </Router>

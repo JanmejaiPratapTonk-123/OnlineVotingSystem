@@ -24,28 +24,25 @@ const Register = () => {
   };
 
   const handleRegister = async (e) => {
-    e.preventDefault();
-    if (!formData.voterId || !formData.email || !formData.password || !formData.name) {
-      setError('All fields are required');
-      return;
-    }
-    setLoading(true);
-    setError('');
+  e.preventDefault();
+  if (!formData.voterId || !formData.email || !formData.password || !formData.name) {
+    setError('All fields are required');
+    return;
+  }
+  setLoading(true);
+  setError('');
 
-    try {
-      const response = await registerUser (formData);  // API call: POST /api/auth/register
-      if (response.otp) {
-        setStep(2);  // Proceed to OTP verification
-        // In prod: OTP sent via email/SMS; here mocked in response
-      } else {
-        setError('Registration failed');
-      }
-    } catch (err) {
-      setError(err.response?.data?.msg || 'Registration error');
-    } finally {
-      setLoading(false);
-    }
+  try {
+    const response = await registerUser(formData);
+    alert(`✅ Registered successfully! OTP sent to ${formData.email}`);
+    setStep(2);  // Move to OTP verification
+  } catch (err) {
+    setError(err.msg || err.message || 'Registration failed');
+  } finally {
+    setLoading(false);
+  }
   };
+
 
   const handleVerifyOTP = async (e) => {
     e.preventDefault();
