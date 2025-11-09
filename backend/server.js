@@ -16,6 +16,7 @@ app.use(helmet());
 app.use(cors());
 app.use(limiter);
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use((req, res, next) => {
   req.io = io;
   next();
@@ -26,6 +27,11 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/vote', require('./routes/vote'));
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api/results', require('./routes/results'));
+
+app.get('/', (req, res) => {
+  res.send('Online Voting System Backend is Running ✅');
+});
+
 
 // Socket.IO for real-time votes
 io.on('connection', (socket) => {

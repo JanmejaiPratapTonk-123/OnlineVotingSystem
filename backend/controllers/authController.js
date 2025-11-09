@@ -30,16 +30,43 @@ exports.register = async (req, res) => {
 };
 // Login (generate OTP)
 exports.login = async (req, res) => {
-  const { email, password } = req.body;
-  const user = await User.findOne({ email });
-  if (!user || !(await user.comparePassword(password))) {
-    return res.status(400).json({ msg: 'Invalid credentials' });
+  try {
+    // ✅ Defensive check so it never crashes again
+    const { email, password } = req.body || {};
+
+    if (!email || !password) {
+      return res.status(400).json({ msg: "Email and password are required" });
+    }
+
+    const user = await User.findOne({ email });
+
+    if (!user || !(await user.comparePassword(password))) {
+      return res.status(400).json({ msg: "Invalid credentials" });
+    }
+
+    if (!user.isVerified) {
+      return res.status(400).json({ msg: "Please verify your account first." });
+    }
+
+    const otp = generateOTP();
+    user.otp = otp;
+    await user.save();
+
+    // ✅ Optional email send
+    if (process.env.NODEMAILER_EMAIL && process.env.NODEMAILER_PASS) {
+      transporter.sendMail({
+        to: email,
+        subject: "Your Login OTP",
+        text: `Your OTP is ${otp}`,
+      });
+    }
+
+    // ✅ Success response
+    res.json({ msg: "OTP sent successfully.", otp });
+  } catch (err) {
+    console.error("Login Error:", err.message);
+    res.status(500).json({ msg: "Internal Server Error" });
   }
-  if (!user.isVerified) return res.status(400).json({ msg: 'Verify first' });
-  const otp = generateOTP();
-  user.otp = otp;
-  await user.save();
-    res.json({ msg: 'OTP sent.', otp });  // Mock for demo
 };
 // Verify OTP & Issue JWT
 exports.verifyOTP = async (req, res) => {
