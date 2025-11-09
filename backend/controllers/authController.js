@@ -1,6 +1,6 @@
 const User = require('../models/user');
 const jwt = require('jsonwebtoken');
-const { generateOTP } = require('../Utils/otpGenerator');
+const { generateOTP } = require('../utils/otpGenerator');
 const nodemailer = require('nodemailer');  // Optional email
 // Nodemailer transporter (optional)
 const transporter = nodemailer.createTransport({
@@ -45,7 +45,7 @@ exports.login = async (req, res) => {
 exports.verifyOTP = async (req, res) => {
   const { email, otp } = req.body;
   const user = await User.findOne({ email, otp });
-  if (!user || !require('../Utils/otpGenerator').validateOTP(otp, user.otp)) {
+  if (!user || !require('../utils/otpGenerator').validateOTP(otp, user.otp)) {
     return res.status(400).json({ msg: 'Invalid OTP' });
   }
   user.isVerified = true;
