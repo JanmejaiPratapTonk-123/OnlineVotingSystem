@@ -1,10 +1,14 @@
-function generateOTP(length = 6) {
-  let otp = '';
-  const digits = '0123456789';
-  for (let i = 0; i < length; i++) {
-    otp += digits[Math.floor(Math.random() * 10)];
-  }
-  return otp;
+// backend/utils/otpGenerator.js
+
+// Simple random 6-digit OTP generator
+function generateOTP() {
+  return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-module.exports = generateOTP;
+// Optional: validate OTP (can be basic or use expiration logic)
+function validateOTP(input, storedOTP) {
+  return input === storedOTP;
+}
+
+// ✅ Correct export format:
+module.exports = { generateOTP, validateOTP };
