@@ -20,16 +20,17 @@ exports.castVote = async (req, res) => {
   }
 };
 
-// ✅ New function
 exports.getVoteStatus = async (req, res) => {
   try {
-    const vote = await Vote.findOne({ voterId: req.user.id });
+    const userId = req.user.id; // coming from auth middleware
+    const vote = await Vote.findOne({ voter: userId });
+
     if (vote) {
-      res.json({ hasVoted: true, candidateId: vote.candidateId });
+      return res.json({ hasVoted: true, candidateId: vote.candidate });
     } else {
-      res.json({ hasVoted: false });
+      return res.json({ hasVoted: false });
     }
-  } catch (error) {
-    res.status(500).json({ msg: 'Server error', error });
+  } catch (err) {
+    res.status(500).json({ msg: 'Error checking vote status' });
   }
 };
