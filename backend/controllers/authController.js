@@ -35,45 +35,50 @@ exports.register = async (req, res) => {
   }
 };
 // Login (generate OTP)
+// ✅ Normal Login for verified users
 exports.login = async (req, res) => {
   try {
-    // ✅ Defensive check so it never crashes again
-    const { email, password } = req.body || {};
+    const { email, password } = req.body;
 
     if (!email || !password) {
       return res.status(400).json({ msg: "Email and password are required" });
     }
 
     const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ msg: "User not found" });
+    }
 
-    if (!user || !(await user.comparePassword(password))) {
+    // Check password
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
       return res.status(400).json({ msg: "Invalid credentials" });
     }
 
+    // Check verification
     if (!user.isVerified) {
       return res.status(400).json({ msg: "Please verify your account first." });
     }
 
-    const otp = generateOTP();
-    user.otp = otp;
-    await user.save();
+    // Create JWT token
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
 
-    // ✅ Optional email send
-    if (process.env.NODEMAILER_EMAIL && process.env.NODEMAILER_PASS) {
-      transporter.sendMail({
-        to: email,
-        subject: "Your Login OTP",
-        text: `Your OTP is ${otp}`,
-      });
-    }
-
-    // ✅ Success response
-    res.json({ msg: "OTP sent successfully.", otp });
+    res.status(200).json({
+      msg: "Login successful",
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    });
   } catch (err) {
-  console.error("Login Error:", err);
-  res.status(500).json({ msg: err.message || "Internal Server Error" });
-}
-
+    console.error("Login Error:", err);
+    res.status(500).json({ msg: "Server error during login" });
+  }
 };
 // Verify OTP & Issue JWT
 exports.verifyOTP = async (req, res) => {
