@@ -28,6 +28,13 @@ const Home = () => {
               >
                 Register to Vote
               </Link>
+              <Link
+                to="/verify"
+                className="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700"
+              >
+                Verify Account
+              </Link>
+
             </div>
           </div>
         </div>

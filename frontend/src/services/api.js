@@ -1,38 +1,150 @@
 import axios from 'axios';
 
+// ================================
+// 🌐 Base API Configuration
+// ================================
 const API = axios.create({
   baseURL: process.env.REACT_APP_API_URL || 'https://onlinevotingsystem-sm9y.onrender.com/api',
 });
 
-// Attach token automatically to every request
+// Automatically attach JWT token (if present)
 API.interceptors.request.use((req) => {
   const token = localStorage.getItem('token');
   if (token) req.headers.Authorization = `Bearer ${token}`;
   return req;
 });
 
-// -------- AUTH --------
-export const registerUser = (data) => API.post('/auth/register', data);
-export const loginUser = (data) => API.post('/auth/login', data);
-export const verifyOTP = (data) => API.post('/auth/verify-otp', data);
+// ================================
+// 🧾 AUTHENTICATION API CALLS
+// ================================
 
-// -------- VOTE --------
-export const castVote = (voteData) => API.post('/vote', voteData);
-export const getHasVoted = () => API.get('/vote/status');
+// ✅ Register a new user
+export const registerUser = async (data) => {
+  try {
+    const res = await API.post('/auth/register', data);
+    return res.data;
+  } catch (err) {
+    throw err.response?.data || { msg: 'Registration failed' };
+  }
+};
 
-// -------- ADMIN --------
-export const addCandidate = (candidateData) => API.post('/admin/candidates', candidateData);
-export const getCandidates = () => API.get('/admin/candidates');
-export const updateCandidate = (id, candidateData) => API.put(`/admin/candidates/${id}`, candidateData);
-export const deleteCandidate = (id) => API.delete(`/admin/candidates/${id}`);
+// ✅ Login (generates OTP if verified)
+export const loginUser = async (data) => {
+  try {
+    const res = await API.post('/auth/login', data);
+    return res.data;
+  } catch (err) {
+    throw err.response?.data || { msg: 'Login failed' };
+  }
+};
 
-// -------- RESULTS --------
-export const getResults = () => API.get('/results');
+// ✅ Verify OTP (used for both register & login)
+export const verifyOTP = async (data) => {
+  try {
+    const res = await API.post('/auth/verify-otp', data);
+    return res.data;
+  } catch (err) {
+    throw err.response?.data || { msg: 'OTP verification failed' };
+  }
+};
 
-// -------- PUBLIC CANDIDATES (for voting page) --------
-export const getAllCandidates = () => API.get('/candidates');
+// ================================
+// 🗳️ VOTING API CALLS
+// ================================
 
-// -------- Extra helpers (for flexibility) --------
+// ✅ Cast a vote
+export const castVote = async (voteData) => {
+  try {
+    const res = await API.post('/vote', voteData);
+    return res.data;
+  } catch (err) {
+    throw err.response?.data || { msg: 'Failed to cast vote' };
+  }
+};
+
+// ✅ Check if user has already voted
+export const getHasVoted = async () => {
+  try {
+    const res = await API.get('/vote/status');
+    return res.data;
+  } catch (err) {
+    throw err.response?.data || { msg: 'Failed to fetch voting status' };
+  }
+};
+
+// ================================
+// 🧑‍💼 ADMIN API CALLS
+// ================================
+
+// ✅ Add a candidate
+export const addCandidate = async (candidateData) => {
+  try {
+    const res = await API.post('/admin/candidates', candidateData);
+    return res.data;
+  } catch (err) {
+    throw err.response?.data || { msg: 'Failed to add candidate' };
+  }
+};
+
+// ✅ Get all candidates (admin)
+export const getCandidates = async () => {
+  try {
+    const res = await API.get('/admin/candidates');
+    return res.data;
+  } catch (err) {
+    throw err.response?.data || { msg: 'Failed to fetch candidates' };
+  }
+};
+
+// ✅ Update candidate
+export const updateCandidate = async (id, candidateData) => {
+  try {
+    const res = await API.put(`/admin/candidates/${id}`, candidateData);
+    return res.data;
+  } catch (err) {
+    throw err.response?.data || { msg: 'Failed to update candidate' };
+  }
+};
+
+// ✅ Delete candidate
+export const deleteCandidate = async (id) => {
+  try {
+    const res = await API.delete(`/admin/candidates/${id}`);
+    return res.data;
+  } catch (err) {
+    throw err.response?.data || { msg: 'Failed to delete candidate' };
+  }
+};
+
+// ================================
+// 📊 RESULTS & PUBLIC DATA
+// ================================
+
+// ✅ Fetch voting results
+export const getResults = async () => {
+  try {
+    const res = await API.get('/results');
+    return res.data;
+  } catch (err) {
+    throw err.response?.data || { msg: 'Failed to fetch results' };
+  }
+};
+
+// ✅ Fetch all candidates (public, for voters)
+export const getAllCandidates = async () => {
+  try {
+    const res = await API.get('/candidates');
+    return res.data;
+  } catch (err) {
+    throw err.response?.data || { msg: 'Failed to fetch candidate list' };
+  }
+};
+
+// ================================
+// ⚙️ Optional Utility Helpers
+// ================================
+
+// Alternate registration (used for older components)
 export const register = async (userData) => {
   try {
     const res = await API.post('/auth/register', userData);
@@ -42,6 +154,7 @@ export const register = async (userData) => {
   }
 };
 
+// Alternate login (used for older components)
 export const login = async (credentials) => {
   try {
     const res = await API.post('/auth/login', credentials);
@@ -50,3 +163,5 @@ export const login = async (credentials) => {
     throw err.response?.data || { msg: 'Login failed' };
   }
 };
+
+export default API;

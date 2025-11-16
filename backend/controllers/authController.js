@@ -85,31 +85,38 @@ exports.verifyOTP = async (req, res) => {
   try {
     const { email, otp } = req.body;
 
-    // Find user by email
+    // Step 1: find user by email
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ msg: "User not found" });
 
-    // ✅ Compare OTP safely (convert both to string)
-    if (String(user.otp).trim() !== String(otp).trim()) {
+    // Step 2: check OTP existence
+    if (!user.otp) {
+      return res.status(400).json({ msg: "No OTP found. Please request again." });
+    }
+
+    // Step 3: compare OTPs as strings (avoid type mismatch)
+    const savedOTP = String(user.otp).trim();
+    const enteredOTP = String(otp).trim();
+
+    if (savedOTP !== enteredOTP) {
       return res.status(400).json({ msg: "Invalid OTP or verification failed" });
     }
 
-    // Mark verified
+    // Step 4: update verification status
     user.isVerified = true;
-    user.otp = undefined; // clear OTP after success
+    user.otp = undefined;
     await user.save();
 
-    // Generate token
+    // Step 5: issue JWT
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
 
     res.json({
-      msg: "Account verified successfully",
+      msg: "✅ Account verified successfully",
       token,
-      user: { id: user._id, role: user.role },
+      user: { id: user._id, email: user.email, role: user.role },
     });
-
   } catch (err) {
     console.error("OTP Verification Error:", err);
-    res.status(500).json({ msg: "Server Error during OTP verification" });
+    res.status(500).json({ msg: "Server error during OTP verification" });
   }
 };
