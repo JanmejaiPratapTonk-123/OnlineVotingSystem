@@ -5,11 +5,15 @@ import { useAuth } from '../context/AuthContext';
 const ProtectedRoute = ({ children, roles = [] }) => {
   const { user, token } = useAuth();
 
+  const storedRole = localStorage.getItem("role"); // Backup role from storage
+
   if (!token) {
     return <Navigate to="/login" replace />;
   }
 
-  if (roles.length > 0 && !roles.includes(user?.role)) {
+  const userRole = user?.role || storedRole; // Use context OR localStorage
+
+  if (roles.length > 0 && !roles.includes(userRole)) {
     return <Navigate to="/" replace />;
   }
 
