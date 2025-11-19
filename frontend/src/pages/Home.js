@@ -24,15 +24,19 @@ const Home = () => {
               </Link>
               <Link
                 to="/register"
-                className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-indigo-600 bg-white hover:bg-indigo-50 dark:bg-gray-700 dark:text-indigo-400 dark:border-gray-600 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-200"
+                className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 dark:bg-gray-700 dark:text-indigo-400 dark:border-gray-600 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-200" style={{ marginLeft: "10px" }}
               >
-                Register to Vote
+                Register
               </Link>
               <Link
                 to="/verify"
-                className="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700"
+                className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 dark:bg-gray-700 dark:text-indigo-400 dark:border-gray-600 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-200" style={{ marginLeft: "10px" }}
               >
                 Verify Account
+              </Link>
+              <Link to="/admin/login"
+                className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 dark:bg-gray-700 dark:text-indigo-400 dark:border-gray-600 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-200" style={{ marginLeft: "10px" }}>
+                Admin Login
               </Link>
 
             </div>
@@ -40,7 +44,7 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Features Section */}
+      {/* Features Section
       <div className="relative">
         <div className="absolute inset-0 flex flex-col" aria-hidden="true">
           <div className="flex-1" />
@@ -107,7 +111,7 @@ const Home = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Call to Action Footer */}
       <div className="bg-indigo-800 dark:bg-indigo-900">

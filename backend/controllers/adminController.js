@@ -43,8 +43,8 @@ exports.getResults = async (req, res) => {
     const candidates = await Candidate.find();
     const votes = await Vote.find();
 
-    // Decrypt votes
     const voteCounts = {};
+
     votes.forEach((vote) => {
       const candidateId = decrypt(vote.encryptedCandidateId);
       voteCounts[candidateId] = (voteCounts[candidateId] || 0) + 1;

@@ -1,22 +1,23 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { registerUser , verifyOTP } from '../services/api';  // API functions (add to api.js if missing)
+import { registerUser, verifyOTP } from '../services/api';
 
 const Register = () => {
-  const [step, setStep] = useState(1);  // 1: Form, 2: OTP
-  const [formData, setFormData] = useState({ 
-    voterId: '', 
-    email: '', 
-    password: '', 
-    name: '', 
-    role: 'voter'  // Default; admin can be set via backend
+  const [step, setStep] = useState(1); // 1 = form, 2 = OTP
+  const [formData, setFormData] = useState({
+    voterId: '',
+    email: '',
+    password: '',
+    name: '',
+    role: 'voter'
   });
+
   const [otp, setOtp] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const { login } = useAuth();  // Not used directly, but for consistency
+  const { login } = useAuth();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -24,31 +25,34 @@ const Register = () => {
   };
 
   const handleRegister = async (e) => {
-  e.preventDefault();
-  if (!formData.voterId || !formData.email || !formData.password || !formData.name) {
-    setError('All fields are required');
-    return;
-  }
-  setLoading(true);
-  setError('');
+    e.preventDefault();
 
-  try {
-  const response = await registerUser(formData);
+    if (!formData.voterId || !formData.email || !formData.password || !formData.name) {
+      setError("All fields are required");
+      return;
+    }
 
-  if (response.msg) {
-    // ✅ Show a visual message instead of alert
-    alert(`✅ ${response.msg}`);
-  }
+    setLoading(true);
+    setError('');
 
-  // If OTP returned (in dev/demo mode), log it
-  if (response.otp) {
-    console.log("Mock OTP (for testing):", response.otp);
-  }
+    try {
+      const response = await registerUser(formData);
 
-  navigate('/verify', { state: { email: formData.email } });
-} catch (err) {
-  setError(err.response?.data?.msg || err.message || 'Registration failed');
-}}
+      if (response.msg) {
+        alert(`✅ ${response.msg}`);
+      }
+
+      if (response.otp) {
+        console.log("Mock OTP (for testing):", response.otp);
+      }
+
+      navigate('/verify', { state: { email: formData.email } });
+    } catch (err) {
+      setError(err.response?.data?.msg || err.message || "Registration failed");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleVerifyOTP = async (e) => {
     e.preventDefault();
@@ -56,15 +60,16 @@ const Register = () => {
     setError('');
 
     try {
-      const response = await verifyOTP({ email: formData.email, otp });  // Reuse verifyOTP from login
+      const response = await verifyOTP({ email: formData.email, otp });
+
       if (response.token) {
-        login(response.user, response.token);  // Auto-login after register
-        navigate('/voting');  // Redirect to voting
+        login(response.user, response.token);
+        navigate('/voting');
       } else {
-        setError('Invalid OTP');
+        setError("Invalid OTP");
       }
     } catch (err) {
-      setError(err.response?.data?.msg || 'OTP verification failed');
+      setError(err.response?.data?.msg || "OTP verification failed");
     } finally {
       setLoading(false);
     }
@@ -75,68 +80,110 @@ const Register = () => {
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
-            Register as Voter
+            Register as {formData.role === "admin" ? "Admin" : "Voter"}
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
             Create your account to participate in the election
           </p>
         </div>
+
         <form className="mt-8 space-y-6" onSubmit={step === 1 ? handleRegister : handleVerifyOTP}>
           {step === 1 ? (
             <>
               <div className="space-y-4">
+
+                {/* Voter ID */}
                 <div>
                   <input
                     name="voterId"
                     type="text"
                     required
-                    className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     placeholder="Voter ID (e.g., VOTER123)"
                     value={formData.voterId}
                     onChange={handleChange}
+                    className="appearance-none relative block w-full px-3 py-2 border border-gray-300 
+                               placeholder-gray-500 text-gray-900 rounded-md focus:outline-none 
+                               focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm 
+                               dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                   />
                 </div>
+
+                {/* Email */}
                 <div>
                   <input
                     name="email"
                     type="email"
                     required
-                    className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     placeholder="Email Address"
                     value={formData.email}
                     onChange={handleChange}
+                    className="appearance-none relative block w-full px-3 py-2 border border-gray-300 
+                               placeholder-gray-500 text-gray-900 rounded-md focus:outline-none 
+                               focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm 
+                               dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                   />
                 </div>
+
+                {/* Password */}
                 <div>
                   <input
                     name="password"
                     type="password"
                     required
                     minLength={6}
-                    className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     placeholder="Password (min 6 chars)"
                     value={formData.password}
                     onChange={handleChange}
+                    className="appearance-none relative block w-full px-3 py-2 border border-gray-300 
+                               placeholder-gray-500 text-gray-900 rounded-md focus:outline-none 
+                               focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm 
+                               dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                   />
                 </div>
+
+                {/* Full Name */}
                 <div>
                   <input
                     name="name"
                     type="text"
                     required
-                    className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     placeholder="Full Name"
                     value={formData.name}
                     onChange={handleChange}
+                    className="appearance-none relative block w-full px-3 py-2 border border-gray-300 
+                               placeholder-gray-500 text-gray-900 rounded-md focus:outline-none 
+                               focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm 
+                               dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                   />
                 </div>
+
+                {/* Role Select */}
+                <div>
+                  <select
+                    name="role"
+                    value={formData.role}
+                    onChange={handleChange}
+                    className="appearance-none relative block w-full px-3 py-2 border border-gray-300 
+                               text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 
+                               focus:border-indigo-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 
+                               dark:text-white"
+                  >
+                    <option value="voter">Register as Voter</option>
+                    <option value="admin">Register as Admin</option>
+                  </select>
+                </div>
               </div>
+
               {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+
               <div>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+                  className="group relative w-full flex justify-center py-2 px-4 border border-transparent 
+                             text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 
+                             focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 
+                             disabled:opacity-50"
                 >
                   {loading ? 'Registering...' : 'Register & Send OTP'}
                 </button>
@@ -149,25 +196,36 @@ const Register = () => {
                   type="text"
                   required
                   maxLength={6}
-                  className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                   placeholder="Enter 6-digit OTP"
                   value={otp}
                   onChange={(e) => setOtp(e.target.value)}
+                  className="appearance-none relative block w-full px-3 py-2 border border-gray-300 
+                             placeholder-gray-500 text-gray-900 rounded-md focus:outline-none 
+                             focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm 
+                             dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
               </div>
+
               {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+
               <div className="space-y-2">
                 <button
                   type="submit"
                   disabled={loading}
-                  className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
+                  className="group relative w-full flex justify-center py-2 px-4 border border-transparent 
+                             text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 
+                             focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 
+                             disabled:opacity-50"
                 >
                   {loading ? 'Verifying...' : 'Verify OTP & Complete Registration'}
                 </button>
+
                 <button
                   type="button"
                   onClick={() => setStep(1)}
-                  className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                  className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md 
+                             shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 
+                             dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 >
                   Back to Form
                 </button>
@@ -175,6 +233,7 @@ const Register = () => {
             </>
           )}
         </form>
+
         <div className="text-center">
           <Link
             to="/login"

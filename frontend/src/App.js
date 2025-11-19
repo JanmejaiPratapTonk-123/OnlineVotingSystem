@@ -10,6 +10,7 @@ import Results from './pages/Results';
 import AdminDashboard from './pages/AdminDashboard';
 import Navbar from './components/Navbar';
 import VerifyOTP from './pages/VerifyOTP';
+import AdminLogin from "./pages/AdminLogin";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/verify" element={<VerifyOTP />} />
+            <Route path="/admin/login" element={<AdminLogin />} />
 
             <Route
               path="/voting"
@@ -40,7 +42,7 @@ function App() {
               }
             />
             <Route
-              path="/admin"
+              path="/admin/dashboard"
               element={
                 <ProtectedRoute roles={['admin']}>
                   <AdminDashboard />

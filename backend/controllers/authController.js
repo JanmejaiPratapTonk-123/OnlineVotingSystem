@@ -61,9 +61,12 @@ exports.login = async (req, res) => {
     }
 
     // Create JWT token
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
+    const token = jwt.sign(
+    { id: user._id, role: user.role },
+    process.env.JWT_SECRET,
+    { expiresIn: "1h" }
+    );
+
 
     res.status(200).json({
       msg: "Login successful",
@@ -108,7 +111,12 @@ exports.verifyOTP = async (req, res) => {
     await user.save();
 
     // Step 5: issue JWT
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+    const token = jwt.sign(
+    { id: user._id, role: user.role },
+    process.env.JWT_SECRET,
+    { expiresIn: "1d" }
+    );
+
 
     res.json({
       msg: "✅ Account verified successfully",
