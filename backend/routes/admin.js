@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const auth = require("../Middleware/auth");
 const adminController = require("../controllers/adminController");
+const Candidate = require("../models/Candidate");   // <-- Missing import added
 
 // Candidate CRUD
 router.post("/candidates", auth, adminController.addCandidate);
@@ -11,8 +12,12 @@ router.get("/stats", auth, adminController.getStats);
 
 // Get candidates list (needed for table display)
 router.get("/candidates", auth, async (req, res) => {
-  const candidates = await Candidate.find();
-  res.json(candidates);
+  try {
+    const candidates = await Candidate.find();
+    res.json(candidates);
+  } catch (err) {
+    res.status(500).json({ msg: err.message });
+  }
 });
 
 // Election Results

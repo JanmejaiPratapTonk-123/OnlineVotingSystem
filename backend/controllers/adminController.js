@@ -65,7 +65,7 @@ exports.getResults = async (req, res) => {
 // 📈 Get stats
 exports.getStats = async (req, res) => {
   try {
-    const voters = await User.countDocuments({ role: "voter" });
+    const voters = await User.countDocuments({ role: "voter" }); // only count voters
     const candidates = await Candidate.countDocuments();
     const votes = await Vote.countDocuments();
 
