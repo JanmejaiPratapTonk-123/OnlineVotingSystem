@@ -10,7 +10,7 @@ import Results from './pages/Results';
 import AdminDashboard from './pages/AdminDashboard';
 import Navbar from './components/Navbar';
 import VerifyOTP from './pages/VerifyOTP';
-import AdminLogin from './pages/Adminlogin';
+import AdminLogin from './pages/AdminLogin';
 import ManageCandidates from './pages/ManageCandidates';
 
 

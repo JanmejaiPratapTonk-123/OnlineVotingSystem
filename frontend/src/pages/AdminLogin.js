@@ -13,13 +13,11 @@ export default function AdminLogin() {
     try {
       const res = await api.post("/auth/login", { email, password });
 
-      // Check if admin
       if (res.data.user.role !== "admin") {
         alert("You are not an admin!");
         return;
       }
 
-      // Store admin details
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("role", res.data.user.role);
       localStorage.setItem("name", res.data.user.name);

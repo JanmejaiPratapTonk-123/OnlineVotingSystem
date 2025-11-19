@@ -1,3 +1,4 @@
+const User = require("../models/user");
 const Candidate = require("../models/Candidate");
 const Vote = require("../models/vote");
 const { decrypt } = require("../utils/encryption");
@@ -58,5 +59,18 @@ exports.getResults = async (req, res) => {
     res.json(results);
   } catch (err) {
     res.status(500).json({ msg: err.message });
+  }
+};
+
+// 📈 Get stats
+exports.getStats = async (req, res) => {
+  try {
+    const voters = await User.countDocuments({ role: "voter" });
+    const candidates = await Candidate.countDocuments();
+    const votes = await Vote.countDocuments();
+
+    res.json({ voters, candidates, votes });
+  } catch (error) {
+    res.status(500).json({ msg: "Error fetching stats" });
   }
 };

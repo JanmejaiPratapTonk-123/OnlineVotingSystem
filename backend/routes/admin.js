@@ -7,6 +7,7 @@ const adminController = require("../controllers/adminController");
 router.post("/candidates", auth, adminController.addCandidate);
 router.put("/candidates/:id", auth, adminController.updateCandidate);
 router.delete("/candidates/:id", auth, adminController.deleteCandidate);
+router.get("/stats", auth, adminController.getStats);
 
 // Get candidates list (needed for table display)
 router.get("/candidates", auth, async (req, res) => {
