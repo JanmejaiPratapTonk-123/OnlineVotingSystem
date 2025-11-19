@@ -12,7 +12,7 @@ import Navbar from './components/Navbar';
 import VerifyOTP from './pages/VerifyOTP';
 import AdminLogin from './pages/AdminLogin';
 import ManageCandidates from './pages/ManageCandidates';
-
+import ViewVoters from "./pages/ViewVoters";
 
 function App() {
   return (
@@ -62,6 +62,15 @@ function App() {
               element={
                 <ProtectedRoute roles={['admin']}>
                   <ManageCandidates />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/admin/voters"
+              element={
+                <ProtectedRoute roles={["admin"]}>
+                  <ViewVoters />
                 </ProtectedRoute>
               }
             />

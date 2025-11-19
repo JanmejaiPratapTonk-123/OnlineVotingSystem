@@ -1,3 +1,4 @@
+const User = require("../models/user");
 const express = require("express");
 const router = express.Router();
 const auth = require("../Middleware/auth");
@@ -9,6 +10,7 @@ router.post("/candidates", auth, adminController.addCandidate);
 router.put("/candidates/:id", auth, adminController.updateCandidate);
 router.delete("/candidates/:id", auth, adminController.deleteCandidate);
 router.get("/stats", auth, adminController.getStats);
+router.get("/voters", auth, adminController.getVoters);
 
 // Get candidates list (needed for table display)
 router.get("/candidates", auth, async (req, res) => {

@@ -35,7 +35,7 @@ export default function AdminDashboard() {
           <Link to="/admin/dashboard">Dashboard</Link>
           <Link to="/admin/candidates">Manage Candidates</Link>
           <Link to="/admin/results">Election Results</Link>
-          <Link to="/admin/voters">View Voters</Link>
+          <Link to="/admin/voters" className="hover:text-indigo-400">View Voters</Link>
           <button onClick={handleLogout} className="text-red-400 hover:text-red-600 mt-6">
             Logout
           </button>

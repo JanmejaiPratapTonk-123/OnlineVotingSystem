@@ -62,6 +62,16 @@ exports.getResults = async (req, res) => {
   }
 };
 
+// Get Voters
+exports.getVoters = async (req, res) => {
+  try {
+    const voters = await User.find({ role: "voter" }).select("name email voterId hasVoted");
+    res.json(voters);
+  } catch (err) {
+    res.status(500).json({ msg: err.message });
+  }
+};
+
 // 📈 Get stats
 exports.getStats = async (req, res) => {
   try {
