@@ -21,6 +21,7 @@ const Navbar = () => {
             </Link>
           </div>
           <div className="flex items-center space-x-4">
+
             {!user ? (
               <>
                 <Link to="/login" className="text-gray-700 dark:text-gray-300 hover:text-indigo-600">
@@ -29,21 +30,31 @@ const Navbar = () => {
                 <Link to="/register" className="text-gray-700 dark:text-gray-300 hover:text-indigo-600">
                   Register
                 </Link>
+                <Link to="/admin/login" className="text-gray-700 dark:text-gray-300 hover:text-indigo-600">
+                  Admin Login
+                </Link>
               </>
             ) : (
               <>
                 <span className="text-gray-700 dark:text-gray-300">Welcome, {user.name}</span>
-                <Link to="/voting" className="text-gray-700 dark:text-gray-300 hover:text-indigo-600">
-                  Vote
-                </Link>
-                <Link to="/results" className="text-gray-700 dark:text-gray-300 hover:text-indigo-600">
-                  Results
-                </Link>
+
+                {user.role === 'voter' && (
+                  <>
+                    <Link to="/voting" className="text-gray-700 dark:text-gray-300 hover:text-indigo-600">
+                      Vote
+                    </Link>
+                    <Link to="/results" className="text-gray-700 dark:text-gray-300 hover:text-indigo-600">
+                      Results
+                    </Link>
+                  </>
+                )}
+
                 {user.role === 'admin' && (
-                  <Link to="/admin" className="text-gray-700 dark:text-gray-300 hover:text-indigo-600">
-                    Admin
+                  <Link to="/admin/dashboard" className="text-gray-700 dark:text-gray-300 hover:text-indigo-600">
+                    Admin Dashboard
                   </Link>
                 )}
+
                 <button onClick={handleLogout} className="text-red-600 hover:text-red-800">
                   Logout
                 </button>

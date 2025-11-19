@@ -10,7 +10,7 @@ import Results from './pages/Results';
 import AdminDashboard from './pages/AdminDashboard';
 import Navbar from './components/Navbar';
 import VerifyOTP from './pages/VerifyOTP';
-import AdminLogin from "./pages/AdminLogin";
+import AdminLogin from './pages/AdminLogin';
 
 function App() {
   return (
@@ -19,12 +19,15 @@ function App() {
         <div className="App">
           <Navbar />
           <Routes>
+            
+            {/* Public Pages */}
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/verify" element={<VerifyOTP />} />
             <Route path="/admin/login" element={<AdminLogin />} />
 
+            {/* Voter Protected Routes */}
             <Route
               path="/voting"
               element={
@@ -36,11 +39,13 @@ function App() {
             <Route
               path="/results"
               element={
-                <ProtectedRoute roles={['voter', 'admin', 'candidate']}>
+                <ProtectedRoute roles={['voter', 'admin']}>
                   <Results />
                 </ProtectedRoute>
               }
             />
+
+            {/* Admin Protected Route */}
             <Route
               path="/admin/dashboard"
               element={
@@ -49,6 +54,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
           </Routes>
         </div>
       </Router>

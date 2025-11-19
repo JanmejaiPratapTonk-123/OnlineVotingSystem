@@ -5,11 +5,10 @@ import { useAuth } from '../context/AuthContext';
 const ProtectedRoute = ({ children, roles = [] }) => {
   const { user, token } = useAuth();
 
-  const storedRole = localStorage.getItem("role"); // Read from localStorage
+  const storedRole = localStorage.getItem("role");
   const userRole = user?.role || storedRole;
 
   if (!token) {
-    // Redirect admins to their login page
     return <Navigate to={roles.includes('admin') ? '/admin/login' : '/login'} replace />;
   }
 
