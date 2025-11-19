@@ -10,7 +10,9 @@ import Results from './pages/Results';
 import AdminDashboard from './pages/AdminDashboard';
 import Navbar from './components/Navbar';
 import VerifyOTP from './pages/VerifyOTP';
-import AdminLogin from './pages/AdminLogin';
+import AdminLogin from './pages/Adminlogin';
+import ManageCandidates from './pages/ManageCandidates';
+
 
 function App() {
   return (
@@ -54,6 +56,16 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
+            <Route
+              path="/admin/candidates"
+              element={
+                <ProtectedRoute roles={['admin']}>
+                  <ManageCandidates />
+                </ProtectedRoute>
+              }
+            />
+
 
           </Routes>
         </div>

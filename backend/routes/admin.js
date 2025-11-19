@@ -1,25 +1,20 @@
 const express = require("express");
-const { auth, adminAuth } = require('../Middleware/auth');
-const { addCandidate, getResults } = require('../controllers/adminController');
-const adminController = require("../controllers/adminController");
 const router = express.Router();
+const auth = require("../Middleware/auth");
+const adminController = require("../controllers/adminController");
 
-router.use(auth);
-router.post('/candidates', adminAuth, addCandidate);
-const { deleteCandidate } = require('../controllers/adminController');  // Add controller
+// Candidate CRUD
+router.post("/candidates", auth, adminController.addCandidate);
+router.put("/candidates/:id", auth, adminController.updateCandidate);
+router.delete("/candidates/:id", auth, adminController.deleteCandidate);
 
-router.post("/addCandidate", adminController.addCandidate);
-router.put("/updateCandidate/:id", adminController.updateCandidate);
-router.delete("/deleteCandidate/:id", adminController.deleteCandidate);
-router.get("/results", adminController.getResults);
+// Get candidates list (needed for table display)
+router.get("/candidates", auth, async (req, res) => {
+  const candidates = await Candidate.find();
+  res.json(candidates);
+});
 
-// In backend/controllers/adminController.js, add:
-exports.deleteCandidate = async (req, res) => {
-  try {
-    await Candidate.findByIdAndDelete(req.params.id);
-    res.json({ msg: 'Candidate deleted' });
-  } catch (err) {
-    res.status(500).json({ msg: err.message });
-  }
-};
+// Election Results
+router.get("/results", auth, adminController.getResults);
+
 module.exports = router;
