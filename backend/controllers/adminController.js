@@ -6,13 +6,25 @@ const { decrypt } = require("../utils/encryption");
 // ➕ Add candidate
 exports.addCandidate = async (req, res) => {
   try {
-    const candidate = new Candidate(req.body);
+    const { name, party } = req.body;
+
+    if (!name) {
+      return res.status(400).json({ msg: "Candidate name is required" });
+    }
+
+    const candidate = new Candidate({
+      name,
+      party: party || "Independent", // optional
+      votes: 0,
+    });
+
     await candidate.save();
-    res.json(candidate);
+    res.status(201).json(candidate);
   } catch (err) {
     res.status(500).json({ msg: err.message });
   }
 };
+
 
 // ✏️ Update candidate
 exports.updateCandidate = async (req, res) => {
