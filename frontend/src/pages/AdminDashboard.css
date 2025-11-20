@@ -1,0 +1,47 @@
+.admin-dashboard {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 250px;
+  background: #1a1a2e;
+  color: white;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar .logo {
+  text-align: center;
+  font-size: 22px;
+  margin-bottom: 20px;
+}
+
+.sidebar nav a {
+  color: white;
+  text-decoration: none;
+  padding: 10px;
+  display: block;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}
+
+.sidebar nav a:hover {
+  background: #16213e;
+}
+
+.logout-btn {
+  margin-top: auto;
+  padding: 10px;
+  border: none;
+  background: #e94560;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.dashboard-content {
+  flex: 1;
+  padding: 40px;
+}
