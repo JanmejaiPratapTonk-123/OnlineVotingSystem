@@ -1,8 +1,8 @@
-const express = require("express");
-const router = express.Router();
-const auth = require("../Middleware/auth");
-const voteController = require("../controllers/voteController");
+const mongoose = require("mongoose");
 
-router.post("/", auth, voteController.castVote);
+const voteSchema = new mongoose.Schema({
+  voterId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  candidateId: { type: mongoose.Schema.Types.ObjectId, ref: "Candidate", required: true },
+});
 
-module.exports = router;
+module.exports = mongoose.model("Vote", voteSchema);
