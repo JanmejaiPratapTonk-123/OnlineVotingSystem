@@ -1,8 +1,8 @@
-const mongoose = require('mongoose');
-const { encrypt } = require('../utils/encryption');  // Import helper
-const voteSchema = new mongoose.Schema({
-  hashedVoterId: { type: String, required: true, unique: true },  // SHA256 of voterId
-  encryptedCandidateId: { type: String, required: true }  // AES encrypted candidate _id
-}, { timestamps: true });
-// Pre-save: Encrypt on creation (handled in controller)
-module.exports = mongoose.model('Vote', voteSchema);
+const express = require("express");
+const router = express.Router();
+const auth = require("../Middleware/auth");
+const voteController = require("../controllers/voteController");
+
+router.post("/", auth, voteController.castVote);
+
+module.exports = router;
