@@ -8,23 +8,22 @@ exports.addCandidate = async (req, res) => {
   try {
     const { name, party } = req.body;
 
-    if (!name) {
+    if (!name || !name.trim()) {
       return res.status(400).json({ msg: "Candidate name is required" });
     }
 
     const candidate = new Candidate({
-      name,
-      party: party || "Independent", // optional
-      votes: 0,
+      name: name.trim(),
+      party: party || "Independent",
     });
 
     await candidate.save();
     res.status(201).json(candidate);
   } catch (err) {
-    res.status(500).json({ msg: err.message });
+    console.error("Error adding candidate:", err);
+    res.status(500).json({ msg: "Server error", error: err.message });
   }
 };
-
 
 // ✏️ Update candidate
 exports.updateCandidate = async (req, res) => {
@@ -34,6 +33,9 @@ exports.updateCandidate = async (req, res) => {
       req.body,
       { new: true }
     );
+    if (!candidate) {
+      return res.status(404).json({ msg: "Candidate not found" });
+    }
     res.json(candidate);
   } catch (err) {
     res.status(500).json({ msg: err.message });
@@ -43,14 +45,17 @@ exports.updateCandidate = async (req, res) => {
 // ❌ Delete candidate
 exports.deleteCandidate = async (req, res) => {
   try {
-    await Candidate.findByIdAndDelete(req.params.id);
+    const deleted = await Candidate.findByIdAndDelete(req.params.id);
+    if (!deleted) {
+      return res.status(404).json({ msg: "Candidate not found" });
+    }
     res.json({ msg: "Candidate deleted" });
   } catch (err) {
     res.status(500).json({ msg: err.message });
   }
 };
 
-// 📊 Get results
+// 📊 Get results (candidate + vote count)
 exports.getResults = async (req, res) => {
   try {
     const candidates = await Candidate.find();
@@ -70,29 +75,33 @@ exports.getResults = async (req, res) => {
 
     res.json(results);
   } catch (err) {
+    console.error("Error getting results:", err);
     res.status(500).json({ msg: err.message });
   }
 };
 
-// Get Voters
+// 👥 Get voters list
 exports.getVoters = async (req, res) => {
   try {
-    const voters = await User.find({ role: "voter" }).select("name email voterId hasVoted");
+    const voters = await User.find({ role: "voter" }).select(
+      "name email voterId hasVoted"
+    );
     res.json(voters);
   } catch (err) {
     res.status(500).json({ msg: err.message });
   }
 };
 
-// 📈 Get stats
+// 📈 Get stats for dashboard
 exports.getStats = async (req, res) => {
   try {
-    const voters = await User.countDocuments({ role: "voter" }); // only count voters
+    const voters = await User.countDocuments({ role: "voter" });
     const candidates = await Candidate.countDocuments();
     const votes = await Vote.countDocuments();
 
     res.json({ voters, candidates, votes });
   } catch (error) {
+    console.error("Error fetching stats:", error);
     res.status(500).json({ msg: "Error fetching stats" });
   }
 };

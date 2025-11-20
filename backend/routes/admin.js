@@ -1,45 +1,21 @@
 const express = require("express");
 const router = express.Router();
 const auth = require("../Middleware/auth");
-
+const adminController = require("../controllers/adminController");
 const Candidate = require("../models/Candidate");
-const User = require("../models/user");
-const Vote = require("../models/vote");
 
-// ====================== 📊 DASHBOARD STATS ======================
-router.get("/stats", auth, async (req, res) => {
-  try {
-    const voters = await User.countDocuments({ role: "voter" });
-    const candidates = await Candidate.countDocuments();
-    const votes = await Vote.countDocuments();
+// 📊 Dashboard stats
+router.get("/stats", auth, adminController.getStats);
 
-    res.json({ voters, candidates, votes });
-  } catch (err) {
-    res.status(500).json({ msg: "Error fetching stats", err });
-  }
-});
+// 👥 Voters list
+router.get("/voters", auth, adminController.getVoters);
 
-// ====================== 👥 VIEW VOTERS ======================
-router.get("/voters", auth, async (req, res) => {
-  try {
-    const voters = await User.find({ role: "voter" }).select("-password");
-    res.json(voters);
-  } catch (err) {
-    res.status(500).json({ msg: err.message });
-  }
-});
+// 🧑‍💼 Candidate CRUD
+router.post("/candidates", auth, adminController.addCandidate);
+router.put("/candidates/:id", auth, adminController.updateCandidate);
+router.delete("/candidates/:id", auth, adminController.deleteCandidate);
 
-// ====================== 🧑‍💼 CANDIDATE CRUD ======================
-router.post("/candidates", auth, async (req, res) => {
-  try {
-    const newCandidate = new Candidate(req.body);
-    await newCandidate.save();
-    res.status(201).json(newCandidate);
-  } catch (err) {
-    res.status(500).json({ msg: err.message });
-  }
-});
-
+// List all candidates (for ManageCandidates & Voting)
 router.get("/candidates", auth, async (req, res) => {
   try {
     const candidates = await Candidate.find();
@@ -49,43 +25,7 @@ router.get("/candidates", auth, async (req, res) => {
   }
 });
 
-router.put("/candidates/:id", auth, async (req, res) => {
-  try {
-    const updated = await Candidate.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.json(updated);
-  } catch (err) {
-    res.status(500).json({ msg: err.message });
-  }
-});
-
-router.delete("/candidates/:id", auth, async (req, res) => {
-  try {
-    await Candidate.findByIdAndDelete(req.params.id);
-    res.json({ msg: "Candidate deleted successfully" });
-  } catch (err) {
-    res.status(500).json({ msg: err.message });
-  }
-});
-
-// ====================== 📥 RESULTS ======================
-router.get("/results", auth, async (req, res) => {
-  try {
-    const results = await Vote.aggregate([
-      { $group: { _id: "$candidateId", votes: { $sum: 1 } } },
-      {
-        $lookup: {
-          from: "candidates",
-          localField: "_id",
-          foreignField: "_id",
-          as: "candidate",
-        },
-      },
-    ]);
-
-    res.json(results);
-  } catch (err) {
-    res.status(500).json({ msg: "Error fetching results", err });
-  }
-});
+// 🧾 Election results
+router.get("/results", auth, adminController.getResults);
 
 module.exports = router;
