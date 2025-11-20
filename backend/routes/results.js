@@ -1,9 +1,9 @@
-const express = require('express');
-const { auth, adminAuth } = require('../Middleware/auth');
-const { getResults } = require('../controllers/adminController');
+const express = require("express");
 const router = express.Router();
+const auth = require("../Middleware/auth");
+const adminController = require("../controllers/adminController");
 
-router.use(auth, adminAuth);
-router.get('/', getResults);
+// GET /api/results/  → returns election results
+router.get("/", auth, adminController.getResults);
 
 module.exports = router;
