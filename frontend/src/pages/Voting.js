@@ -21,16 +21,17 @@ export default function Voting() {
 
   // Submit vote
   const castVote = async () => {
-    if (!selectedCandidate) {
-      return alert("Please select a candidate!");
-    }
-    try {
-      await api.post("/vote", { candidateId: selectedCandidate });
-      setMessage("Your vote has been cast successfully! 🎉");
-    } catch (error) {
-      setMessage(error.response?.data?.msg || "Failed to cast vote.");
-    }
-  };
+  if (!selectedCandidate) {
+    return alert("Please select a candidate!");
+  }
+  try {
+    const res = await api.post("/vote", { candidateId: selectedCandidate });
+    setMessage(res.data.msg || "Vote cast successfully!");
+  } catch (error) {
+    setMessage(error.response?.data?.msg || "Failed to cast vote.");
+  }
+};
+
 
   return (
     <div className="p-8 text-center">
